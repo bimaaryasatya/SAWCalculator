@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>SAW Calculator</title>
+		<link
+			rel="stylesheet"
+			href="{{ url_for('static', filename='css/style.css') }}"
+		/>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+			rel="stylesheet"
+		/>
+	</head>
+	<body>
+		<div class="container">
+			<header>
+				<h1>SAW Calculator</h1>
+				<p>Simple Additive Weighting Method</p>
+			</header>
+
+			<section class="card input-section">
+				<h2>Input Data</h2>
+				<div class="form-group">
+					<label for="appTitle">Judul Aplikasi:</label>
+					<input
+						type="text"
+						id="appTitle"
+						placeholder="Misal: Pemilihan Laptop Terbaik"
+					/>
+				</div>
+
+				<h3>Kriteria</h3>
+				<div id="criteria-inputs" class="input-container"></div>
+				<button class="button-add" onclick="addCriterion()">
+					Add Kriteria
+				</button>
+
+				<h3>Alternatif</h3>
+				<div id="alternatives-inputs" class="input-container"></div>
+				<button class="button-add" onclick="addAlternative()">
+					Add Alternatif
+				</button>
+
+				<h3>Bobot Kriteria</h3>
+				<div id="weights-inputs" class="input-container"></div>
+
+				<button
+					class="button-secondary"
+					id="saveConfigBtn"
+					onclick="saveConfiguration()"
+				>
+					Simpan Konfigurasi
+				</button>
+
+				<button class="button-primary" onclick="calculateSAW()">
+					Hitung SAW
+				</button>
+			</section>
+			<br />
+			<section
+				class="card result-section"
+				id="results-display"
+				style="display: none"
+			>
+				<h2>Hasil Perhitungan SAW</h2>
+
+				<h3>Matriks Normalisasi (R)</h3>
+				<div class="table-container">
+					<table id="normalization-table">
+						<thead>
+							<tr></tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</div>
+
+				<h3>Matriks Normalisasi Terbobot (R_i * W_j)</h3>
+				<div class="table-container">
+					<table id="weighted-normalization-table">
+						<thead>
+							<tr></tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</div>
+
+				<h3>Hasil Akhir (V)</h3>
+				<div class="table-container">
+					<table id="final-results-table">
+						<thead>
+							<tr>
+								<th>Alternatif</th>
+								<th>Skor SAW</th>
+								<th>Peringkat</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</div>
+
+				<div id="winner-display" class="winner-info" style="display: none">
+					<h3>Alternatif Terbaik: <span id="best-alternative-name"></span></h3>
+					<p>Dengan Skor SAW: <span id="best-alternative-score"></span></p>
+				</div>
+			</section>
+		</div>
+
+		<div id="custom-alert-modal" class="modal">
+			<div class="modal-content">
+				<span class="close-button">&times;</span>
+				<h3 id="modal-title"></h3>
+				<p id="modal-message"></p>
+				<button class="button-primary" id="modal-ok-button">OK</button>
+			</div>
+		</div>
+
+		<div class="dark-mode-toggle" id="darkModeToggle">
+			<span>Dark Mode</span>
+			<label class="switch">
+				<input type="checkbox" id="darkModeCheckbox" />
+				<span class="slider"></span>
+			</label>
+		</div>
+
+		<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+	</body>
+</html>
