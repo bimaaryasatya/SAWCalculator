@@ -517,3 +517,46 @@ function renderTable(tableElement, rowHeaders, colHeaders, dataMatrix) {
 		});
 	});
 }
+
+function resetApplication() {
+	// Reset global counters
+	criterionCount = 0;
+	alternativeCount = 0;
+
+	// Clear criteria and alternatives arrays
+	criteria = [];
+	alternatives = [];
+
+	// Clear input fields
+	document.getElementById("appTitle").value = "";
+
+	// Clear dynamic input sections
+	document.getElementById("criteria-inputs").innerHTML = "";
+	document.getElementById("alternatives-inputs").innerHTML = "";
+	document.getElementById("weights-inputs").innerHTML = "";
+
+	// Clear and hide alternative values section if it exists
+	const alternativeValuesSection = document.getElementById(
+		"alternative-values-section"
+	);
+	if (alternativeValuesSection) {
+		alternativeValuesSection.innerHTML = "";
+		// You might want to hide it completely if it's dynamically added
+		// alternativeValuesSection.style.display = 'none'; // Uncomment if you want to hide the whole section
+	}
+
+	// Hide results display
+	document.getElementById("results-display").style.display = "none";
+
+	// Reset header title
+	document.querySelector("header h1").textContent = "SAW Calculator";
+
+	// Add initial criterion and alternative again for a fresh start
+	addCriterion();
+	addAlternative();
+
+	showCustomAlert(
+		"Aplikasi Direset",
+		"Semua data telah direset. Anda bisa memulai perhitungan baru."
+	);
+}
