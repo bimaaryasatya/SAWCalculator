@@ -86,7 +86,7 @@ function addCriterion() {
 	newCriterionDiv.dataset.id = criterionCount;
 
 	newCriterionDiv.innerHTML = `
-        <input type="text" id="criterion-name-${criterionCount}" placeholder="Nama Kriteria C${criterionCount}" onchange="updateCriterionData(${criterionCount})">
+        <input type="text" id="criterion-name-${criterionCount}" placeholder="Nama Kriteria C${criterionCount}" onchange="updateCriterionData(${criterionCount})" style=color: black; >
         <select id="criterion-type-${criterionCount}" onchange="updateCriterionData(${criterionCount})">
             <option value="benefit">Benefit</option>
             <option value="cost">Cost</option>
