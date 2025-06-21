@@ -8,7 +8,7 @@ def index():
     return render_template('index.html')
 
 @app.route('/googled7cbc6eee26b6f85.html')
-def index():
+def google():
     return render_template('googled7cbc6eee26b6f85.html')
 
 @app.route('/calculate_saw', methods=['POST'])
