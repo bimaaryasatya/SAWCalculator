@@ -7,6 +7,10 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
+@app.route('/googled7cbc6eee26b6f85.html')
+def index():
+    return render_template('googled7cbc6eee26b6f85.html')
+
 @app.route('/calculate_saw', methods=['POST'])
 def calculate_saw():
     data = request.json
