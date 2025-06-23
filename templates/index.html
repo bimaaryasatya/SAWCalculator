@@ -3,125 +3,96 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>{{ title }}</title>
+		<title>SPK HP</title>
 		<link
-			rel="stylesheet"
-			href="{{ url_for('static', filename='css/style.css') }}"
-		/>
-		<link
-			href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap"
+			href="https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@300;400;500;600;700&display=swap"
 			rel="stylesheet"
 		/>
-
-		<meta
-			property="og:title"
-			content="SAW Calculator: Metode Pengambilan Keputusan Terbaik"
-		/>
-		<meta
-			property="og:description"
-			content="Gunakan Kalkulator SAW ini untuk menganalisis dan mengambil keputusan berdasarkan kriteria dan alternatif Anda."
-		/>
-		<meta
-			property="og:image"
-			content="https://res.cloudinary.com/dyvbjniwt/image/upload/v1750318124/sawICO_eyuorh.ico"
-		/>
-		<meta property="og:url" content="https://sawcalculator.bimazznxt.my.id" />
-		<meta property="og:type" content="website" />
-		<meta property="og:site_name" content="SAW Calculator" />
-
-		<meta name="twitter:card" content="summary_large_image" />
-		<meta name="twitter:title" content="SAW Calculator" />
-		<meta name="twitter:description" content="Alat Bantu Keputusan SAW Anda." />
-		<meta
-			name="twitter:image"
-			content="https://res.cloudinary.com/dyvbjniwt/image/upload/v1750318124/sawICO_eyuorh.ico"
-		/>
-
-		<link
-			rel="icon"
-			href="https://res.cloudinary.com/dyvbjniwt/image/upload/v1750318124/sawICO_eyuorh.ico"
-			type="image/x-icon"
-		/>
-		<link
-			rel="shortcut icon"
-			href="https://res.cloudinary.com/dyvbjniwt/image/upload/v1750318124/sawICO_eyuorh.ico"
-			type="image/x-icon"
-		/>
+		<link rel="stylesheet" href="/static/css/style.css" />
 	</head>
 	<body>
+		<div class="floating-shapes">
+			<div class="shape"></div>
+			<div class="shape"></div>
+			<div class="shape"></div>
+			<div class="shape"></div>
+		</div>
+
 		<div class="container">
-			<header>
-				<h1>{{ title }}</h1>
+			<div class="header">
+				<h1>Sistem Pengambilan Keputusan</h1>
+				<h2>Menentukan Smartphone Terbaik Untuk Keperluan Fotografi</h2>
 				<p>Simple Additive Weighting Method</p>
-			</header>
+			</div>
 
-			<section class="card input-section">
-				<h2>Input Data</h2>
+			<div class="glass-card">
+				<h2 class="section-title">Input Data</h2>
 
-				<h3>Kriteria</h3>
-				<div id="criteria-inputs" class="input-container">
-					{% for crit in criteria %}
-					<div class="input-row">
-						<label>{{ crit.name }} ({{ crit.type }})</label>
-						<input type="number" step="0.01" id="weight-{{ loop.index0 }}" value="1" min="0" />
-					</div>
-					{% endfor %}
+				<h3 class="subsection-title">Kriteria</h3>
+				<div id="criteria-container">
+					<!-- Criteria inputs will be dynamically populated here -->
 				</div>
 
-				<h3>Alternatif</h3>
-				<select id="alternatives-select" size="6" style="width: 100%; padding: 8px; margin-bottom: 10px;">
-					{% for alt in alternatives %}
-					<option value="{{ alt }}">{{ alt }}</option>
-					{% endfor %}
-				</select>
-				<button class="button-secondary" onclick="addSelectedAlternative()">
-					Add Alternatif
-				</button>
-
-				<div id="selected-alternatives" class="input-container" style="margin-top: 15px; margin-bottom: 15px;">
-					<!-- Selected alternatives will appear here -->
+				<h3 class="subsection-title">Alternatif</h3>
+				<div class="alternative-dropdown-container">
+					<select id="alternative-select" class="glass-select">
+						<option value="">Pilih Alternatif...</option>
+						<!-- Alternative options will be dynamically populated here -->
+					</select>
+					<button
+						class="glass-button secondary"
+						id="add-alternative-btn"
+						onclick="addAlternative()"
+					>
+						Tambah Alternatif
+					</button>
 				</div>
 
-				<h3>Nilai Alternatif per Kriteria</h3>
-				<div id="alternative-values-section" class="table-container">
-					<!-- Table for inputting alternative values will be rendered here -->
+				<div id="selected-alternatives" class="selected-alternatives">
+					<div class="empty-state">Belum ada alternatif yang dipilih</div>
 				</div>
 
-				<button class="button-primary" onclick="calculateSAW()">
+				<h3 class="subsection-title">Nilai Alternatif per Kriteria</h3>
+				<div id="alternative-values-container">
+					<div class="empty-state">Pilih alternatif terlebih dahulu</div>
+				</div>
+
+				<button class="glass-button primary" onclick="calculateSAW()">
 					Hitung SAW
 				</button>
-			</section>
-			<br />
-			<section
-				class="card result-section"
-				id="results-display"
-				style="display: none"
-			>
-				<h2>Hasil Perhitungan SAW</h2>
+				<button
+					class="glass-button secondary"
+					onclick="resetApp()"
+					style="margin-left: 10px; background-color: #ff6b6b"
+				>
+					Reset
+				</button>
+			</div>
 
-				<h3>Matriks Normalisasi (R)</h3>
-				<div class="table-container">
-					<table id="normalization-table">
-						<thead>
-							<tr></tr>
-						</thead>
+			<div id="results-section" class="glass-card" style="display: none">
+				<h2 class="section-title">Hasil Perhitungan SAW</h2>
+
+				<h3 class="subsection-title">Matriks Normalisasi (R)</h3>
+				<div class="glass-table-container">
+					<table class="glass-table" id="normalization-table">
+						<thead></thead>
 						<tbody></tbody>
 					</table>
 				</div>
 
-				<h3>Matriks Normalisasi Terbobot (R_i * W_j)</h3>
-				<div class="table-container">
-					<table id="weighted-normalization-table">
-						<thead>
-							<tr></tr>
-						</thead>
+				<h3 class="subsection-title">
+					Matriks Normalisasi Terbobot (R_i * W_j)
+				</h3>
+				<div class="glass-table-container">
+					<table class="glass-table" id="weighted-table">
+						<thead></thead>
 						<tbody></tbody>
 					</table>
 				</div>
 
-				<h3>Hasil Akhir (V)</h3>
-				<div class="table-container">
-					<table id="final-results-table">
+				<h3 class="subsection-title">Hasil Akhir (V)</h3>
+				<div class="glass-table-container">
+					<table class="glass-table" id="final-table">
 						<thead>
 							<tr>
 								<th>Alternatif</th>
@@ -133,35 +104,325 @@
 					</table>
 				</div>
 
-				<div id="winner-display" class="winner-info" style="display: none">
-					<h3>Alternatif Terbaik: <span id="best-alternative-name"></span></h3>
-					<p>Dengan Skor SAW: <span id="best-alternative-score"></span></p>
+				<div id="winner-section" class="winner-section" style="display: none">
+					<h3>
+						Alternatif Terbaik:
+						<span id="winner-name" class="winner-name"></span>
+					</h3>
+					<p>
+						Dengan Skor SAW:
+						<span id="winner-score" class="winner-score"></span>
+					</p>
 				</div>
-			</section>
-		</div>
-
-		<div id="custom-alert-modal" class="modal">
-			<div class="modal-content">
-				<span class="close-button">&times;</span>
-				<h3 id="modal-title"></h3>
-				<p id="modal-message"></p>
-				<button class="button-primary" id="modal-ok-button">OK</button>
 			</div>
 		</div>
 
-		<div class="dark-mode-toggle" id="darkModeToggle">
-			<span>Dark Mode</span>
-			<label class="switch">
-				<input type="checkbox" id="darkModeCheckbox" />
-				<span class="slider"></span>
-			</label>
-		</div>
-
 		<script>
-			window.initialCriteria = {{ criteria | tojson }};
-			window.initialAlternatives = {{ alternatives | tojson }};
-			window.initialTitle = "{{ title }}";
+			let criteria = {{ criteria|tojson }};
+			let selectedAlternatives = [];
+			let alternativeValues = {};
+
+			function populateCriteriaInputs() {
+				const container = document.getElementById("criteria-container");
+				container.innerHTML = "";
+				criteria.forEach((crit, index) => {
+					const critType =
+						crit.type.charAt(0).toUpperCase() + crit.type.slice(1);
+					const div = document.createElement("div");
+					div.className = "criteria-row";
+					div.innerHTML = `
+			                 <label>${crit.name} (${critType})</label>
+			                 <input type="number" class="glass-input" step="0.01" value="1" min="0" placeholder="Bobot" data-crit-index="${index}">
+			             `;
+					container.appendChild(div);
+				});
+			}
+
+			function populateAlternativeDropdown(alternatives) {
+				const select = document.getElementById("alternative-select");
+				// Clear existing options except the first placeholder
+				select.innerHTML = '<option value="">Pilih Alternatif...</option>';
+				alternatives.forEach((alt) => {
+					const option = document.createElement("option");
+					option.value = alt;
+					option.textContent = alt;
+					select.appendChild(option);
+				});
+			}
+
+			function addAlternative() {
+				const select = document.getElementById("alternative-select");
+				const selectedValue = select.value;
+
+				if (!selectedValue) {
+					alert("Pilih alternatif terlebih dahulu!");
+					return;
+				}
+
+				if (selectedAlternatives.includes(selectedValue)) {
+					alert("Alternatif sudah dipilih!");
+					return;
+				}
+
+				selectedAlternatives.push(selectedValue);
+				alternativeValues[selectedValue] = {};
+				updateSelectedAlternatives();
+				updateAlternativeValuesTable();
+				select.value = "";
+			}
+
+			function removeAlternative(alternative) {
+				const index = selectedAlternatives.indexOf(alternative);
+				if (index > -1) {
+					selectedAlternatives.splice(index, 1);
+					delete alternativeValues[alternative];
+					updateSelectedAlternatives();
+					updateAlternativeValuesTable();
+				}
+			}
+
+			function updateSelectedAlternatives() {
+				const container = document.getElementById("selected-alternatives");
+
+				if (selectedAlternatives.length === 0) {
+					container.innerHTML =
+						'<div class="empty-state">Belum ada alternatif yang dipilih</div>';
+					return;
+				}
+
+				container.innerHTML = selectedAlternatives.map((alt) => `<div class="alternative-tag">${alt}<button class="remove-tag" onclick="removeAlternative('${alt}')" title="Hapus">×</button></div>`).join("");
+			}
+
+			function updateAlternativeValuesTable() {
+				const container = document.getElementById(
+					"alternative-values-container"
+				);
+
+				if (selectedAlternatives.length === 0) {
+					container.innerHTML =
+						'<div class="empty-state">Pilih alternatif terlebih dahulu</div>';
+					return;
+				}
+
+				let tableHTML = `
+			             <div class="glass-table-container">
+			                 <table class="glass-table">
+			                     <thead>
+			                         <tr>
+			                             <th>Alternatif</th>
+			                             ${criteria
+																	.map((c) => `<th>${c.name}</th>`)
+																	.join("")}
+			                         </tr>
+			                     </thead>
+			                     <tbody>
+			         `;
+
+				selectedAlternatives.forEach((alt) => {
+					tableHTML += `<tr><td>${alt}</td>`;
+					criteria.forEach((crit, index) => {
+						tableHTML += `<td><input type="number" class="glass-input" step="0.01" min="0"
+			                     placeholder="Nilai ${crit.name}"
+			                     onchange="updateAlternativeValue('${alt}', ${index}, this.value)"></td>`;
+					});
+					tableHTML += "</tr>";
+				});
+
+				tableHTML += "</tbody></table></div>";
+				container.innerHTML = tableHTML;
+			}
+
+			function updateAlternativeValue(alternative, criteriaIndex, value) {
+				if (!alternativeValues[alternative]) {
+					alternativeValues[alternative] = {};
+				}
+				alternativeValues[alternative][criteriaIndex] = parseFloat(value) || 0;
+			}
+
+			function calculateSAW() {
+				if (selectedAlternatives.length === 0) {
+					alert("Pilih minimal satu alternatif!");
+					return;
+				}
+
+				// Get criteria weights
+				const weights = [];
+				const criteriaInputs = document.querySelectorAll(
+					"#criteria-container input"
+				);
+				criteriaInputs.forEach((input) => {
+					weights.push(parseFloat(input.value) || 0);
+				});
+
+				// Validate input
+				const totalWeight = weights.reduce((a, b) => a + b, 0);
+				if (totalWeight === 0) {
+					alert("Total bobot kriteria tidak boleh nol!");
+					return;
+				}
+
+				// Normalize weights
+				const normalizedWeights = weights.map((w) => w / totalWeight);
+
+				// Validate alternative values
+				for (let alt of selectedAlternatives) {
+					if (!alternativeValues[alt]) {
+						alert(`Nilai untuk ${alt} belum diisi!`);
+						return;
+					}
+					for (let i = 0; i < criteria.length; i++) {
+						if (!alternativeValues[alt][i] && alternativeValues[alt][i] !== 0) {
+							alert(`Nilai ${criteria[i].name} untuk ${alt} belum diisi!`);
+							return;
+						}
+					}
+				}
+
+				// Create decision matrix
+				const decisionMatrix = selectedAlternatives.map((alt) =>
+					criteria.map((_, index) => alternativeValues[alt][index])
+				);
+
+				// Normalize decision matrix
+				const normalizedMatrix = [];
+				for (let j = 0; j < criteria.length; j++) {
+					const column = decisionMatrix.map((row) => row[j]);
+					let normalizedColumn;
+
+					if (criteria[j].type.toLowerCase() === "benefit") {
+						const max = Math.max(...column);
+						normalizedColumn = column.map((val) => (max === 0 ? 0 : val / max));
+					} else {
+						// Cost
+						const min = Math.min(...column.filter((val) => val > 0));
+						normalizedColumn = column.map((val) => (val === 0 ? 0 : min / val));
+					}
+
+					for (let i = 0; i < selectedAlternatives.length; i++) {
+						if (!normalizedMatrix[i]) normalizedMatrix[i] = [];
+						normalizedMatrix[i][j] = normalizedColumn[i];
+					}
+				}
+
+				// Calculate weighted normalized matrix
+				const weightedMatrix = normalizedMatrix.map((row) =>
+					row.map((val, j) => val * normalizedWeights[j])
+				);
+
+				// Calculate final scores
+				const finalScores = weightedMatrix.map((row, i) => {
+					return {
+						alternative: selectedAlternatives[i],
+						score: row.reduce((sum, val) => sum + val, 0),
+					};
+				});
+				finalScores.sort((a, b) => b.score - a.score);
+				const winner = finalScores[0];
+				const winnerName = winner.alternative;
+				const winnerScore = winner.score.toFixed(4);
+				const winnerSection = document.getElementById("winner-section");
+				const winnerNameElement = document.getElementById("winner-name");
+				const winnerScoreElement = document.getElementById("winner-score");
+				winnerNameElement.textContent = winnerName;
+				winnerScoreElement.textContent = winnerScore;
+				winnerSection.style.display = "block";
+				document.getElementById("results-section").style.display = "block";
+				updateNormalizationTable(normalizedMatrix);
+				updateWeightedTable(weightedMatrix);
+				updateFinalTable(finalScores);
+			}
+
+			// Functions to update result tables (unchanged)
+			function updateNormalizationTable(matrix) {
+				const table = document.getElementById("normalization-table");
+				const thead = table.querySelector("thead");
+				const tbody = table.querySelector("tbody");
+				thead.innerHTML = "";
+				tbody.innerHTML = "";
+
+				// Header row
+				let headerRow = "<tr><th>Alternatif</th>";
+				criteria.forEach((c) => {
+					headerRow += `<th>${c.name}</th>`;
+				});
+				headerRow += "</tr>";
+				thead.innerHTML = headerRow;
+
+				// Body rows
+				matrix.forEach((row, i) => {
+					let rowHTML = `<tr><td>${selectedAlternatives[i]}</td>`;
+					row.forEach((val) => {
+						rowHTML += `<td>${val.toFixed(4)}</td>`;
+					});
+					rowHTML += "</tr>";
+					tbody.innerHTML += rowHTML;
+				});
+			}
+
+			function updateWeightedTable(matrix) {
+				const table = document.getElementById("weighted-table");
+				const thead = table.querySelector("thead");
+				const tbody = table.querySelector("tbody");
+				thead.innerHTML = "";
+				tbody.innerHTML = "";
+
+				// Header row
+				let headerRow = "<tr><th>Alternatif</th>";
+				criteria.forEach((c) => {
+					headerRow += `<th>${c.name}</th>`;
+				});
+				headerRow += "</tr>";
+				thead.innerHTML = headerRow;
+
+				// Body rows
+				matrix.forEach((row, i) => {
+					let rowHTML = `<tr><td>${selectedAlternatives[i]}</td>`;
+					row.forEach((val) => {
+						rowHTML += `<td>${val.toFixed(4)}</td>`;
+					});
+					rowHTML += "</tr>";
+					tbody.innerHTML += rowHTML;
+				});
+			}
+
+			function updateFinalTable(finalScores) {
+				const table = document.getElementById("final-table");
+				const tbody = table.querySelector("tbody");
+				tbody.innerHTML = "";
+
+				finalScores.forEach((item, index) => {
+					const rowHTML = `
+			                 <tr>
+			                     <td>${item.alternative}</td>
+			                     <td>${item.score.toFixed(4)}</td>
+			                     <td>${index + 1}</td>
+			                 </tr>
+			             `;
+					tbody.innerHTML += rowHTML;
+				});
+			}
+
+			// Initialize by populating data from Flask variables
+			populateCriteriaInputs();
+			populateAlternativeDropdown({{ alternatives|tojson }});
+
+			function resetApp() {
+				// Reset selected alternatives and alternative values
+				selectedAlternatives = [];
+				alternativeValues = {};
+				updateSelectedAlternatives();
+				updateAlternativeValuesTable();
+
+				// Reset criteria weights to default 1
+				const criteriaInputs = document.querySelectorAll("#criteria-container input");
+				criteriaInputs.forEach((input) => {
+					input.value = 1;
+				});
+
+				// Hide results section and winner section
+				document.getElementById("results-section").style.display = "none";
+				document.getElementById("winner-section").style.display = "none";
+			}
 		</script>
-		<script src="{{ url_for('static', filename='js/script.js') }}"></script>
 	</body>
 </html>

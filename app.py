@@ -67,9 +67,10 @@ def close_connection(exception):
     if db is not None:
         db.close()
 
-@app.before_request
-def setup():
-    init_db()
+# Removed init_db call on every request to avoid potential issues
+# @app.before_request
+# def setup():
+#     init_db()
 
 @app.route('/')
 def index():
@@ -136,5 +137,24 @@ def calculate_saw():
         'alternative_names': [a['name'] for a in alternatives]
     })
 
-if __name__ == '__main__':
+# Removed /api/data endpoint as it is no longer needed
+# @app.route('/api/data', methods=['GET'])
+# def get_criteria_alternatives():
+#     db = get_db()
+#     cursor = db.cursor()
+#     cursor.execute('SELECT name, type FROM criteria ORDER BY id')
+#     criteria = [{"name": row[0], "type": row[1]} for row in cursor.fetchall()]
+#     cursor.execute('SELECT name FROM alternatives ORDER BY id')
+#     alternatives = [row[0] for row in cursor.fetchall()]
+#     return jsonify({
+#         'criteria': criteria,
+#         'alternatives': alternatives
+#     })
+
+def main():
+    with app.app_context():
+        init_db()
     app.run(debug=True)
+
+if __name__ == '__main__':
+    main()
