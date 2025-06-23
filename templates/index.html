@@ -169,12 +169,20 @@
 
     function filterAlternatives() {
         const searchInput = document.getElementById("alternative-search");
-        const filter = searchInput.value.toLowerCase();
+        const filter = searchInput.value.toLowerCase().trim();
         const alternativesToFilter = useGsmArenaData ? gsmArenaAlternatives : allAlternatives;
 
-        const filtered = alternativesToFilter.filter((alt) =>
-            alt.toLowerCase().includes(filter)
-        );
+        if (filter === "") {
+            populateFilteredAlternativesList(alternativesToFilter);
+            return;
+        }
+
+        const tokens = filter.split(/\s+/);
+
+        const filtered = alternativesToFilter.filter((alt) => {
+            const altLower = alt.toLowerCase();
+            return tokens.every(token => altLower.includes(token));
+        });
         populateFilteredAlternativesList(filtered);
     }
 
@@ -186,8 +194,11 @@
             return;
         }
         alternatives.forEach((alt) => {
+            // If the alternative string contains brand and device separated by space,
+            // optionally display only the device name part after the first space.
+            // But since user wants brand + device name together, display full alt.
             const div = document.createElement("div");
-            div.textContent = alt;
+            div.textContent = alt; // Display full brand + device name
             div.className = "filtered-alternative-item";
             div.style.padding = "0.5rem";
             div.style.cursor = "pointer";
@@ -439,6 +450,43 @@
         });
     }
 
+    const brandMapping = {
+        "Galaxy": "Samsung",
+        "iPhone": "Apple",
+        "Redmi": "Xiaomi",
+        "Poco": "Xiaomi",
+        "Mi": "Xiaomi",
+        "Pixel": "Google",
+        "OnePlus": "OnePlus",
+        "Moto": "Motorola",
+        "Nokia": "Nokia",
+        "Huawei": "Huawei",
+        "Honor": "Honor",
+        "Realme": "Realme",
+        "Vivo": "Vivo",
+        "Oppo": "Oppo",
+        "Asus": "Asus",
+        "Sony": "Sony",
+        "LG": "LG",
+        "HTC": "HTC",
+        "BlackBerry": "BlackBerry",
+        "Lenovo": "Lenovo",
+        "ZTE": "ZTE",
+        "Alcatel": "Alcatel",
+        "Google": "Google",
+        "Infinix": "Infinix",
+        "Tecno": "Tecno",
+        "Lava": "Lava",
+        "Micromax": "Micromax",
+        "Panasonic": "Panasonic",
+        "Sharp": "Sharp",
+        "Coolpad": "Coolpad",
+        "Honor": "Honor",
+        "Realme": "Realme",
+        "Samsung": "Samsung",
+        "Apple": "Apple"
+    };
+
     async function toggleDataSource() {
         useGsmArenaData = document.getElementById("data-source-toggle").checked;
         const searchInput = document.getElementById("alternative-search");
@@ -454,7 +502,16 @@
                 }
                 const data = await response.json();
                 if (data.alternatives) {
-                    gsmArenaAlternatives = data.alternatives;
+                    gsmArenaAlternatives = data.alternatives.map(deviceName => {
+                        // Prepend brand name if deviceName starts with a known brand keyword
+                        for (const keyword in brandMapping) {
+                            if (deviceName.startsWith(keyword)) {
+                                return brandMapping[keyword] + " " + deviceName;
+                            }
+                        }
+                        // If no brand keyword matched, return deviceName as is
+                        return deviceName;
+                    });
                 } else if (data.error) {
                     alert(`Error fetching GSM Arena data: ${data.error}`);
                     // Revert toggle if there's an error
