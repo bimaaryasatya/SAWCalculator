@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify, g
 import numpy as np
 import sqlite3
 import requests
-from bs4 import BeautifulSoup
+# from bs4 import BeautifulSoup # bs4 tidak diperlukan lagi untuk fungsi gsmarena_api ini
 
 app = Flask(__name__)
 DATABASE = 'saw_data.db'
@@ -68,11 +68,6 @@ def close_connection(exception):
     db = getattr(g, '_database', None)
     if db is not None:
         db.close()
-
-# Removed init_db call on every request to avoid potential issues
-# @app.before_request
-# def setup():
-#     init_db()
 
 @app.route('/')
 def index():
@@ -142,50 +137,36 @@ def calculate_saw():
 @app.route('/api/gsmarena')
 def gsmarena_api():
     """
-    Fetch smartphone alternatives from GSM Arena homepage using basic scraping.
-    Only returns phone names.
+    Fetch smartphone alternatives from the custom Google Apps Script API.
     """
     try:
-
-
-        url = "https://www.gsmarena.com/"
+        url = "https://script.google.com/macros/s/AKfycbxNu27V2Y2LuKUIQMK8lX1y0joB6YmG6hUwB1fNeVbgzEh22TcDGrOak03Fk3uBHmz-/exec?route=device-list"
         response = requests.get(url)
-        soup = BeautifulSoup(response.text, 'html.parser')
-        phone_links = soup.select('.module-phones li a')
-        gsm_alternatives = [a.text.strip() for a in phone_links[:10]]
+        response.raise_for_status() # Raise an exception for HTTP errors
+
+        # The API response is a dict with a 'data' key containing the list of devices
+        raw_devices_data = response.json().get("data", [])
+
+        gsm_alternatives = []
+        if isinstance(raw_devices_data, list):
+            for device in raw_devices_data:
+                # Extract 'device_name' from each dictionary in the list
+                if isinstance(device, dict) and 'device_name' in device:
+                    gsm_alternatives.append(device['device_name'])
+
         return jsonify({"alternatives": gsm_alternatives})
+    except requests.exceptions.RequestException as e:
+        return jsonify({"error": f"Failed to fetch data from API: {e}"}), 500
+    except ValueError:
+        return jsonify({"error": "Failed to decode JSON from API response. Response might not be valid JSON."}), 500
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 def main():
     with app.app_context():
         init_db()
+    print("DEBUG: Flask app starting with latest code.") # <-- TAMBAHKAN INI
     app.run(debug=True)
 
 if __name__ == '__main__':
     main()
-
-@app.route('/api/gsmarena')
-def gsmarena_api():
-    """
-    Fetch smartphone alternatives from GSM Arena API (or scrape) and return as JSON.
-    For demonstration, this will simulate fetching data.
-    """
-    try:
-        # Example: Fetch top smartphones from a public API or scrape GSM Arena
-        # Here, we simulate with static data for demonstration
-        gsm_alternatives = [
-            "Samsung Galaxy S23 Ultra",
-            "Apple iPhone 15 Pro",
-            "Google Pixel 8 Pro",
-            "Xiaomi 14 Pro",
-            "OnePlus 11",
-            "Sony Xperia 1 V",
-            "Huawei P60 Pro",
-            "Motorola Edge 40 Pro",
-            "Asus ROG Phone 7",
-            "Realme GT 3"
-        ]
-        return jsonify({"alternatives": gsm_alternatives})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
