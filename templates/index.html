@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>SAW Calculator</title>
+		<title>{{ title }}</title>
 		<link
 			rel="stylesheet"
 			href="{{ url_for('static', filename='css/style.css') }}"
@@ -51,46 +51,41 @@
 	<body>
 		<div class="container">
 			<header>
-				<h1>SAW Calculator</h1>
+				<h1>{{ title }}</h1>
 				<p>Simple Additive Weighting Method</p>
 			</header>
 
 			<section class="card input-section">
 				<h2>Input Data</h2>
-				<div class="form-group">
-					<label for="appTitle">Judul Aplikasi:</label>
-					<input
-						type="text"
-						id="appTitle"
-						placeholder="Misal: Pemilihan Laptop Terbaik"
-					/>
-				</div>
 
 				<h3>Kriteria</h3>
-				<div id="criteria-inputs" class="input-container"></div>
-				<button class="button-add" onclick="addCriterion()">
-					Add Kriteria
-				</button>
+				<div id="criteria-inputs" class="input-container">
+					{% for crit in criteria %}
+					<div class="input-row">
+						<label>{{ crit.name }} ({{ crit.type }})</label>
+						<input type="number" step="0.01" id="weight-{{ loop.index0 }}" value="1" min="0" />
+					</div>
+					{% endfor %}
+				</div>
 
 				<h3>Alternatif</h3>
-				<div id="alternatives-inputs" class="input-container"></div>
-				<button class="button-add" onclick="addAlternative()">
+				<select id="alternatives-select" size="6" style="width: 100%; padding: 8px; margin-bottom: 10px;">
+					{% for alt in alternatives %}
+					<option value="{{ alt }}">{{ alt }}</option>
+					{% endfor %}
+				</select>
+				<button class="button-secondary" onclick="addSelectedAlternative()">
 					Add Alternatif
 				</button>
 
-				<h3>Bobot Kriteria</h3>
-				<div id="weights-inputs" class="input-container"></div>
+				<div id="selected-alternatives" class="input-container" style="margin-top: 15px; margin-bottom: 15px;">
+					<!-- Selected alternatives will appear here -->
+				</div>
 
-				<button
-					class="button-secondary"
-					id="saveConfigBtn"
-					onclick="saveConfiguration()"
-				>
-					Simpan Konfigurasi
-				</button>
-				<button class="button-secondary" onclick="resetApplication()">
-					Reset Aplikasi
-				</button>
+				<h3>Nilai Alternatif per Kriteria</h3>
+				<div id="alternative-values-section" class="table-container">
+					<!-- Table for inputting alternative values will be rendered here -->
+				</div>
 
 				<button class="button-primary" onclick="calculateSAW()">
 					Hitung SAW
@@ -162,6 +157,11 @@
 			</label>
 		</div>
 
+		<script>
+			window.initialCriteria = {{ criteria | tojson }};
+			window.initialAlternatives = {{ alternatives | tojson }};
+			window.initialTitle = "{{ title }}";
+		</script>
 		<script src="{{ url_for('static', filename='js/script.js') }}"></script>
 	</body>
 </html>
