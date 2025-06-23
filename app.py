@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, jsonify, g
 import numpy as np
 import sqlite3
+import requests
+from bs4 import BeautifulSoup
 
 app = Flask(__name__)
 DATABASE = 'saw_data.db'
@@ -137,19 +139,23 @@ def calculate_saw():
         'alternative_names': [a['name'] for a in alternatives]
     })
 
-# Removed /api/data endpoint as it is no longer needed
-# @app.route('/api/data', methods=['GET'])
-# def get_criteria_alternatives():
-#     db = get_db()
-#     cursor = db.cursor()
-#     cursor.execute('SELECT name, type FROM criteria ORDER BY id')
-#     criteria = [{"name": row[0], "type": row[1]} for row in cursor.fetchall()]
-#     cursor.execute('SELECT name FROM alternatives ORDER BY id')
-#     alternatives = [row[0] for row in cursor.fetchall()]
-#     return jsonify({
-#         'criteria': criteria,
-#         'alternatives': alternatives
-#     })
+@app.route('/api/gsmarena')
+def gsmarena_api():
+    """
+    Fetch smartphone alternatives from GSM Arena homepage using basic scraping.
+    Only returns phone names.
+    """
+    try:
+
+
+        url = "https://www.gsmarena.com/"
+        response = requests.get(url)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        phone_links = soup.select('.module-phones li a')
+        gsm_alternatives = [a.text.strip() for a in phone_links[:10]]
+        return jsonify({"alternatives": gsm_alternatives})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 def main():
     with app.app_context():
@@ -158,3 +164,28 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+@app.route('/api/gsmarena')
+def gsmarena_api():
+    """
+    Fetch smartphone alternatives from GSM Arena API (or scrape) and return as JSON.
+    For demonstration, this will simulate fetching data.
+    """
+    try:
+        # Example: Fetch top smartphones from a public API or scrape GSM Arena
+        # Here, we simulate with static data for demonstration
+        gsm_alternatives = [
+            "Samsung Galaxy S23 Ultra",
+            "Apple iPhone 15 Pro",
+            "Google Pixel 8 Pro",
+            "Xiaomi 14 Pro",
+            "OnePlus 11",
+            "Sony Xperia 1 V",
+            "Huawei P60 Pro",
+            "Motorola Edge 40 Pro",
+            "Asus ROG Phone 7",
+            "Realme GT 3"
+        ]
+        return jsonify({"alternatives": gsm_alternatives})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
